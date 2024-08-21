@@ -1,0 +1,208 @@
+<div class="content-wrapper mt-2">
+    <div class="content-body">
+      <!-- content-header component -->
+      <!-- <app-content-header [contentHeader]="contentHeader"></app-content-header> -->
+  
+      <!-- Basic Alerts start -->
+      <section id="home-page">
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h4 class="card-title">Sistema de Gestión Odontológico </h4>
+              </div>
+              <div class="card-body pb-1">
+                <div class="container">
+                  <div class="calendar">
+                    <div id="monthlyView" class="calendar month-view" [class.d-none]="!isMonthlyViewVisible">
+                      <div class="header d-flex justify-content-between align-items-center bg-light p-3">
+                        <div class="buttons">
+                          <button class="btn btn-outline-primary" (click)="showMonthlyView()">M</button>
+                          <button class="btn btn-outline-primary" (click)="showWeeklyView()">S</button>
+                          <button class="btn btn-outline-primary" (click)="showDailyView()">D</button>
+                          <button class="btn btn-outline-primary" (click)="goToToday()">Hoy</button>
+                        </div>
+                        <div class="month-navigation d-flex align-items-center">
+                          <button class="btn btn-outline-secondary" (click)="prevMonth()">&#9664;</button>
+                          <span class="month mx-2">{{ monthNames[currentMonth] }} {{ currentYear }}</span>
+                          <button class="btn btn-outline-secondary" (click)="nextMonth()">&#9654;</button>
+                        </div>
+                      </div>
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th *ngFor="let day of daysInWeek">{{ day }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let week of weeksInMonth">
+                            <td *ngFor="let day of week" [class.today]="isToday(day.day)" (click)="openModal()">
+                              <span *ngIf="day.day">{{ day.day }}</span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                
+                    <div id="weeklyView" class="calendar week-view" [class.d-none]="!isWeeklyViewVisible">
+                      <div class="header d-flex justify-content-between align-items-center bg-light p-3">
+                        <div class="buttons">
+                          <button class="btn btn-outline-primary" (click)="showMonthlyView()">M</button>
+                          <button class="btn btn-outline-primary" (click)="showWeeklyView()">S</button>
+                          <button class="btn btn-outline-primary" (click)="showDailyView()">D</button>
+                          <button class="btn btn-outline-primary" (click)="goToToday()">Hoy</button>
+                        </div>
+                        <div class="week-navigation d-flex align-items-center">
+                          <button class="btn btn-outline-secondary" (click)="prevWeek()">&#9664;</button>
+                          <span class="week mx-2">{{ currentWeekStart | date: 'dd/MM/yyyy' }} - {{ currentWeek[6] | date: 'dd/MM/yyyy' }}</span>
+                          <button class="btn btn-outline-secondary" (click)="nextWeek()">&#9654;</button>
+                        </div>
+                      </div>
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th></th>
+                            <th *ngFor="let day of currentWeek">{{ day | date: 'EEE' }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let hour of hoursInDay">
+                            <td class="hour">{{ hour }}</td>
+                            <td *ngFor="let day of currentWeek" (click)="openModal()"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                
+                    <div id="dailyView" class="calendar day-view" [class.d-none]="!isDailyViewVisible">
+                      <div class="header d-flex justify-content-between align-items-center bg-light p-3">
+                        <div class="buttons">
+                          <button class="btn btn-outline-primary" (click)="showMonthlyView()">M</button>
+                          <button class="btn btn-outline-primary" (click)="showWeeklyView()">S</button>
+                          <button class="btn btn-outline-primary" (click)="showDailyView()">D</button>
+                          <button class="btn btn-outline-primary" (click)="goToToday()">Hoy</button>
+                        </div>
+                        <div class="day-navigation d-flex align-items-center">
+                          <button class="btn btn-outline-secondary" (click)="prevDay()">&#9664;</button>
+                          <span class="day mx-2">{{ currentDay | date: 'fullDate' }}</span>
+                          <button class="btn btn-outline-secondary" (click)="nextDay()">&#9654;</button>
+                        </div>
+                      </div>
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th class="hour"></th>
+                            <th class="text-center">{{ currentDay | date: 'EEEE' }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let hour of hoursInDay">
+                            <td class="hour">{{ hour }}</td>
+                            <td (click)="openModal()"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                
+                  <div class="modal-form position-fixed top-50 start-50 translate-middle bg-light p-4 shadow rounded" *ngIf="isModalOpen">
+                    <div class="modal-header d-flex justify-content-between align-items-center border-bottom mb-3">
+                      <h3>Insertar Nota</h3>
+                      <button class="btn btn-close" (click)="closeModal()"></button>
+                    </div>
+                    <div class="modal-body mb-3">
+                      <div class="row">
+                        <div class="col-md-4">
+                          <img class="img-fluid rounded mb-3" src="https://img.freepik.com/vector-gratis/hombre-dentista-examinando-dientes-paciente_1308-98143.jpg" alt="">
+                        </div>
+                        <div class="col-md-8">
+                          <div class="form-group mb-3">
+                            <input type="text" id="fullName" class="form-control" placeholder="Nombre Completo">
+                          </div>
+                          <div class="form-group mb-3">
+                            <input type="text" id="nit" class="form-control" placeholder="NIT">
+                            <small>Si no tiene el NIT a mano, puede utilizar temporalmente: 1-9 (Recuerde actualizar el NIT del cliente en la ficha después)</small>
+                          </div>
+                          <div class="form-group mb-3">
+                            <input type="email" id="email" class="form-control" placeholder="Correo electrónico">
+                          </div>
+                          <div class="form-group mb-3">
+                            <input type="text" id="phone" class="form-control" placeholder="Teléfono Referencia">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group mb-3">
+                            <label for="doctor">Doctor</label>
+                            <select id="doctor" class="form-select">
+                              <option>Dr. Xavier Guaman</option>
+                            </select>
+                          </div>
+                          <div class="form-group mb-3">
+                            <label for="date">Fecha</label>
+                            <div class="d-flex gap-2">
+                              <input type="number" id="day" class="form-control" placeholder="Día" min="1" max="31" style="width: 30%;">
+                              <input type="number" id="month" class="form-control" placeholder="Mes" min="1" max="12" style="width: 30%;">
+                              <input type="number" id="year" class="form-control" placeholder="Año" min="2000" max="2100" style="width: 30%;">
+                            </div>
+                          </div>
+                          <div class="form-group mb-3">
+                            <label for="time">Hora</label>
+                            <div class="d-flex gap-2">
+                              <input type="number" id="hour" class="form-control" placeholder="Hora" min="1" max="24" style="width: 30%;">
+                              <input type="number" id="minute" class="form-control" placeholder="Minuto" min="0" max="59" style="width: 30%;">
+                              <select id="ampm" class="form-select" style="width: 30%;">
+                                <option value="am">am</option>
+                                <option value="pm">pm</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="form-group mb-3">
+                            <label for="duration">Duración</label>
+                            <input type="number" id="duration" class="form-control" value="15">
+                          </div>
+                          <div class="form-group mb-3">
+                            <label for="referral">Canal de Referido</label>
+                            <select id="referral" class="form-select">
+                              <option>- Seleccione Canal de Referido</option>
+                              <option>- (+) Agregar canal preferido</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group mb-3">
+                            <label for="reason">Motivo de Consulta</label>
+                            <select id="reason" class="form-select">
+                              <option>Seleccione Motivo de Consulta</option>
+                              <option>- Control de tratamiento</option>
+                              <option>- Limpieza</option>
+                              <option>- Primera Consulta</option>
+                              <option>- Urgencia</option>
+                            </select>
+                          </div>
+                          <div class="form-group mb-3">
+                            <label for="observations">Observación Interna</label>
+                            <textarea id="observations" class="form-control" rows="3" placeholder="Observación Interna"></textarea>
+                            <small>Esta observación NO LA VERÁ el paciente en el correo de confirmación de cita</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-end">
+                      <button class="btn btn-secondary" (click)="closeModal()">Cerrar</button>
+                      <button class="btn btn-primary">Imprimir</button>
+                      <button class="btn btn-success" (click)="saveEvent()">Guardar</button>
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Basic Alerts end -->
+    </div>
+  </div>
+  
